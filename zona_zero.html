@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ZONA ZERO — Sopravvivi. Trasmetti. Ripeti.</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap');
+
+:root {
+  --black: #0a0a0a;
+  --anthracite: #1a1a1a;
+  --metal: #2a2a2a;
+  --metal-light: #3a3a3a;
+  --steel: #555;
+  --hazard: #d4a017;
+  --hazard-dim: #8a6a10;
+  --orange-dirty: #c06a20;
+  --green-monitor: #33cc55;
+  --green-dim: #1a7a30;
+  --green-glow: rgba(51,204,85,0.15);
+  --red-alert: #cc3333;
+  --white-dirty: #b8b0a0;
+  --white-clean: #e0dcd4;
+  --text-body: #9a9488;
+  --text-dim: #605a50;
+  --border-metal: #333;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  background:var(--black);color:var(--white-dirty);
+  font-family:'Barlow',sans-serif;line-height:1.6;
+  overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+body::after{
+  content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:9998;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+  opacity:0.5;
+}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section-pad{padding:100px 0}
+.hazard-bar{height:6px;background:repeating-linear-gradient(-45deg,var(--hazard) 0,var(--hazard) 10px,var(--black) 10px,var(--black) 20px);opacity:0.7}
+.hazard-bar.thin{height:3px;opacity:0.4}
+.section-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--hazard-dim);margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.section-label::before{content:'';display:block;width:30px;height:1px;background:var(--hazard-dim)}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5vw,3.5rem);letter-spacing:3px;color:var(--white-clean);line-height:1.1;margin-bottom:20px}
+.section-desc{max-width:700px;color:var(--text-body);font-size:15px;line-height:1.8}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(10,10,10,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border-metal);transition:transform .3s}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;max-width:1200px;margin:0 auto}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--hazard);display:flex;align-items:center;gap:8px;cursor:pointer}
+.nav-logo .dot{width:8px;height:8px;background:var(--green-monitor);border-radius:50%;animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+.nav-links{display:flex;gap:24px;list-style:none}
+.nav-links a{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-body);text-decoration:none;transition:color .3s;position:relative}
+.nav-links a:hover{color:var(--hazard)}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--hazard);transition:width .3s}
+.nav-links a:hover::after{width:100%}
+.nav-burger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:8px}
+.nav-burger span{width:22px;height:2px;background:var(--white-dirty);transition:.3s}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:linear-gradient(180deg,#050505 0%,#0d0d0d 40%,#111 100%)}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(212,160,23,0.06) 0%,transparent 60%),radial-gradient(ellipse at 80% 30%,rgba(51,204,85,0.04) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(192,106,32,0.05) 0%,transparent 60%)}
+.hero-noise{position:absolute;inset:0;opacity:0.08;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:128px 128px}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(51,204,85,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(51,204,85,0.03) 1px,transparent 1px);background-size:60px 60px}
+.hero-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,0.7) 100%)}
+.hero-content{text-align:center;position:relative;z-index:2;padding:40px 24px}
+.hero-tag{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:6px;color:var(--green-monitor);margin-bottom:24px;animation:flicker 4s infinite}
+@keyframes flicker{0%,95%,100%{opacity:1}96%{opacity:0.4}97%{opacity:1}98%{opacity:0.6}}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,14vw,12rem);letter-spacing:clamp(8px,2vw,24px);color:var(--white-clean);line-height:0.9;margin-bottom:16px;text-shadow:0 0 80px rgba(212,160,23,0.15)}
+.hero-claim{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1rem,3vw,1.8rem);letter-spacing:8px;text-transform:uppercase;color:var(--hazard);font-weight:600;margin-bottom:32px}
+.hero-desc{max-width:560px;margin:0 auto 40px;color:var(--text-body);font-size:15px;line-height:1.8}
+.hero-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:3px;text-transform:uppercase;padding:14px 32px;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .3s}
+.btn-primary{background:var(--hazard);color:var(--black)}
+.btn-primary:hover{background:var(--white-clean);color:var(--black)}
+.btn-ghost{background:transparent;color:var(--white-dirty);border:1px solid var(--steel)}
+.btn-ghost:hover{border-color:var(--hazard);color:var(--hazard)}
+.hero-status{margin-top:48px;display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--hazard);letter-spacing:2px}
+.hero-stat-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase}
+
+/* SIGNAL */
+.signal{background:var(--anthracite);position:relative;overflow:hidden}
+.signal::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 70% 50%,rgba(51,204,85,0.04) 0%,transparent 60%);pointer-events:none}
+.signal-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.signal-text h2{margin-bottom:24px}
+.signal-text p{margin-bottom:16px;color:var(--text-body);line-height:1.9;font-size:15px}
+.signal-text p:first-of-type::first-line{color:var(--white-clean);font-weight:600}
+.signal-panel{background:var(--metal);border:1px solid var(--border-metal);padding:32px;position:relative}
+.signal-panel::before{content:'TRANSMISSION LOG';position:absolute;top:-1px;left:20px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--black);background:var(--hazard-dim);padding:2px 10px}
+.signal-panel-line{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--green-monitor);line-height:2.2;border-bottom:1px solid rgba(51,204,85,0.08);padding:4px 0;display:flex;justify-content:space-between}
+.signal-panel-line .dim{color:var(--text-dim);font-size:11px}
+.signal-panel-line .val{color:var(--green-monitor)}
+.signal-panel-line .warn{color:var(--orange-dirty)}
+.signal-panel-line .alert{color:var(--red-alert)}
+.blinking{animation:blink 1.5s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* RADIO */
+.radio{background:var(--black);position:relative}
+.radio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+.radio-card{background:var(--anthracite);border:1px solid var(--border-metal);padding:28px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
+.radio-card:hover{border-color:var(--hazard-dim);transform:translateY(-2px)}
+.radio-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--green-monitor),transparent);opacity:0.5}
+.radio-card-icon{width:40px;height:40px;border:1px solid var(--green-dim);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--green-monitor)}
+.radio-card h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;text-transform:uppercase;color:var(--white-clean);margin-bottom:8px}
+.radio-card p{font-size:13px;color:var(--text-body);line-height:1.7}
+.radio-card .card-tag{margin-top:16px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--hazard-dim);letter-spacing:2px}
+.radio-freq-bar{margin-top:48px;background:var(--metal);border:1px solid var(--border-metal);padding:20px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.radio-freq-item{font-family:'Share Tech Mono',monospace;font-size:12px;display:flex;align-items:center;gap:8px}
+.radio-freq-item .dot{width:6px;height:6px;border-radius:50%}
+.dot-green{background:var(--green-monitor);box-shadow:0 0 6px var(--green-monitor)}
+.dot-orange{background:var(--orange-dirty);box-shadow:0 0 6px var(--orange-dirty)}
+.dot-red{background:var(--red-alert);box-shadow:0 0 6px var(--red-alert)}
+
+/* FLEET */
+.fleet{background:var(--anthracite);position:relative;overflow:hidden}
+.fleet::before{content:'';position:absolute;top:0;right:0;width:50%;height:100%;background:radial-gradient(ellipse at right center,rgba(212,160,23,0.03) 0%,transparent 70%);pointer-events:none}
+.fleet-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:48px}
+.fleet-card{background:var(--black);border:1px solid var(--border-metal);position:relative;overflow:hidden;transition:border-color .4s,box-shadow .4s}
+.fleet-card:hover{border-color:var(--hazard-dim);box-shadow:0 0 40px rgba(212,160,23,0.05)}
+.fleet-card-header{background:var(--metal);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-metal)}
+.fleet-card-code{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--hazard);letter-spacing:2px}
+.fleet-card-status{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;display:flex;align-items:center;gap:6px}
+.fleet-card-status.active{color:var(--green-monitor)}
+.fleet-card-status.standby{color:var(--orange-dirty)}
+.fleet-card-img{height:220px;background:var(--metal);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.fleet-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(10,10,10,0.9) 100%);pointer-events:none}
+.fleet-card-img .placeholder{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:6px;color:var(--metal-light);opacity:0.4}
+.fleet-card-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.fleet-card-body{padding:24px}
+.fleet-card-name{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:var(--white-clean);margin-bottom:4px}
+.fleet-card-role{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--orange-dirty);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.fleet-card-desc{font-size:14px;color:var(--text-body);line-height:1.8;margin-bottom:20px}
+.fleet-tags{display:flex;flex-wrap:wrap;gap:8px}
+.fleet-tag{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--text-dim);border:1px solid var(--metal-light);padding:4px 10px;text-transform:uppercase}
+.fleet-tag.highlight{border-color:var(--hazard-dim);color:var(--hazard-dim)}
+
+/* WORKSHOP */
+.workshop{background:var(--black);position:relative}
+.workshop-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:48px;counter-reset:step}
+.workshop-step{background:var(--anthracite);border:1px solid var(--border-metal);padding:32px 24px;position:relative;overflow:hidden;counter-increment:step;transition:border-color .3s}
+.workshop-step:hover{border-color:var(--orange-dirty)}
+.workshop-step::before{content:counter(step,decimal-leading-zero);font-family:'Bebas Neue',sans-serif;font-size:64px;color:var(--metal);position:absolute;top:12px;right:16px;line-height:1}
+.workshop-step h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;text-transform:uppercase;color:var(--orange-dirty);margin-bottom:12px;position:relative;z-index:1}
+.workshop-step p{font-size:13px;color:var(--text-body);line-height:1.8;position:relative;z-index:1}
+
+/* GALLERY */
+.gallery{background:var(--anthracite)}
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:48px}
+.gallery-item{aspect-ratio:4/3;background:var(--metal);position:relative;overflow:hidden;cursor:pointer;border:1px solid var(--border-metal)}
+.gallery-item:hover .gallery-overlay{opacity:1}
+.gallery-item:hover .gallery-placeholder{transform:scale(1.05)}
+.gallery-item:hover img{transform:scale(1.05)}
+.gallery-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--metal) 0%,var(--metal-light) 100%);transition:transform .6s}
+.gallery-placeholder span{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--metal-light);letter-spacing:4px;opacity:0.5}
+.gallery-item img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform .6s}
+.gallery-overlay{position:absolute;inset:0;background:rgba(10,10,10,0.85);display:flex;flex-direction:column;justify-content:flex-end;padding:20px;opacity:0;transition:opacity .4s;z-index:2}
+.gallery-overlay .caption{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--hazard);letter-spacing:2px;text-transform:uppercase}
+.gallery-overlay .sub{font-size:12px;color:var(--text-dim);margin-top:4px}
+
+/* DECALS */
+.decals{background:var(--black)}
+.decals-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-top:48px}
+.decal-item{background:var(--anthracite);border:1px solid var(--border-metal);padding:24px;text-align:center;transition:border-color .3s}
+.decal-item:hover{border-color:var(--hazard-dim)}
+.decal-symbol{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--hazard);margin-bottom:8px;letter-spacing:2px}
+.decal-name{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase}
+
+/* FOOTER */
+.footer{background:var(--black);border-top:1px solid var(--border-metal);padding:60px 0 40px;position:relative}
+.footer-inner{text-align:center}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:10px;color:var(--hazard);margin-bottom:8px}
+.footer-claim{font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:6px;text-transform:uppercase;color:var(--steel);margin-bottom:24px}
+.footer-text{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);line-height:2;max-width:500px;margin:0 auto}
+.footer-bottom{margin-top:40px;padding-top:20px;border-top:1px solid var(--metal);font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:1px}
+
+/* ANIMATIONS */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s,transform .8s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+
+/* ========== ADMIN PANEL ========== */
+.admin-overlay{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.92);backdrop-filter:blur(8px);overflow-y:auto}
+.admin-overlay.open{display:block}
+.admin-panel{max-width:900px;margin:40px auto;padding:32px;background:var(--anthracite);border:1px solid var(--border-metal);position:relative}
+.admin-panel::before{content:'ACCESSO OPERATIVO — PANNELLO ADMIN';position:absolute;top:-1px;left:20px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--black);background:var(--hazard);padding:2px 12px}
+.admin-close{position:absolute;top:16px;right:20px;background:none;border:1px solid var(--steel);color:var(--white-dirty);font-family:'Share Tech Mono',monospace;font-size:12px;padding:6px 14px;cursor:pointer;letter-spacing:2px;transition:all .3s}
+.admin-close:hover{border-color:var(--red-alert);color:var(--red-alert)}
+.admin-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:4px;color:var(--hazard);margin-bottom:8px;margin-top:20px}
+.admin-subtitle{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;margin-bottom:32px}
+.admin-section{margin-bottom:32px;padding:24px;background:var(--metal);border:1px solid var(--border-metal)}
+.admin-section-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;text-transform:uppercase;color:var(--orange-dirty);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border-metal)}
+.admin-img-row{display:flex;gap:16px;align-items:center;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.05);flex-wrap:wrap}
+.admin-img-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.admin-img-label{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--hazard);letter-spacing:1px;min-width:160px}
+.admin-img-preview{width:80px;height:60px;background:var(--black);border:1px solid var(--border-metal);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.admin-img-preview img{width:100%;height:100%;object-fit:cover}
+.admin-img-preview .no-img{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text-dim);letter-spacing:1px}
+.admin-file-input{display:none}
+.admin-btn{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;padding:8px 16px;border:1px solid var(--steel);background:var(--anthracite);color:var(--white-dirty);cursor:pointer;transition:all .3s;text-transform:uppercase}
+.admin-btn:hover{border-color:var(--green-monitor);color:var(--green-monitor)}
+.admin-btn.delete{border-color:var(--red-alert);color:var(--red-alert);opacity:0.6}
+.admin-btn.delete:hover{opacity:1}
+.admin-status{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--green-monitor);margin-top:4px;letter-spacing:1px;min-height:16px}
+.admin-gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.admin-gallery-slot{background:var(--black);border:1px solid var(--border-metal);padding:12px;text-align:center}
+.admin-gallery-slot .admin-img-preview{width:100%;height:80px;margin-bottom:8px}
+.admin-gallery-slot .slot-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:1px;margin-bottom:8px}
+.admin-gallery-slot .slot-btns{display:flex;gap:6px;justify-content:center}
+.admin-gallery-slot .admin-btn{font-size:9px;padding:4px 8px}
+
+/* LOGIN */
+.login-overlay{display:none;position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.95);justify-content:center;align-items:center}
+.login-overlay.open{display:flex}
+.login-box{background:var(--anthracite);border:1px solid var(--border-metal);padding:40px;max-width:360px;width:90%;text-align:center;position:relative}
+.login-box::before{content:'AUTENTICAZIONE RICHIESTA';position:absolute;top:-1px;left:20px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--black);background:var(--red-alert);padding:2px 10px}
+.login-box h3{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;color:var(--hazard);margin-bottom:8px;margin-top:12px}
+.login-box p{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);margin-bottom:24px;letter-spacing:1px}
+.login-box input{width:100%;padding:12px 16px;background:var(--metal);border:1px solid var(--border-metal);color:var(--white-clean);font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:2px;text-align:center;outline:none;margin-bottom:16px}
+.login-box input:focus{border-color:var(--hazard)}
+.login-box input::placeholder{color:var(--text-dim)}
+.login-error{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--red-alert);margin-bottom:12px;min-height:18px;letter-spacing:1px}
+.login-box .admin-btn{width:100%;padding:12px;font-size:12px}
+.login-cancel{margin-top:12px;background:none;border:none;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);cursor:pointer;letter-spacing:1px}
+.login-cancel:hover{color:var(--white-dirty)}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.95);justify-content:center;align-items:center;cursor:pointer}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:90vh;object-fit:contain;border:1px solid var(--border-metal)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .signal-grid{grid-template-columns:1fr;gap:40px}
+  .radio-grid{grid-template-columns:1fr}
+  .fleet-grid{grid-template-columns:1fr}
+  .gallery-grid{grid-template-columns:repeat(2,1fr)}
+  .admin-gallery-grid{grid-template-columns:repeat(2,1fr)}
+  .nav-links{display:none}
+  .nav-burger{display:flex}
+  .nav-links.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;width:100%;background:rgba(10,10,10,0.95);padding:20px 24px;gap:16px;border-bottom:1px solid var(--border-metal)}
+}
+@media(max-width:600px){
+  .hero-title{letter-spacing:4px}
+  .gallery-grid{grid-template-columns:1fr}
+  .admin-gallery-grid{grid-template-columns:1fr}
+  .hero-status{gap:20px}
+  .section-pad{padding:60px 0}
+  .admin-panel{margin:16px;padding:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo"><span class="dot"></span> ZONA ZERO</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#signal">Segnale</a></li>
+      <li><a href="#radio">Centro Radio</a></li>
+      <li><a href="#fleet">Flotta</a></li>
+      <li><a href="#workshop">Workshop</a></li>
+      <li><a href="#gallery">Archivio</a></li>
+      <li><a href="#" id="adminTrigger" style="color:var(--text-dim);opacity:0.3">&#9881;</a></li>
+    </ul>
+    <div class="nav-burger" id="burger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h3>Accesso Admin</h3>
+    <p>Inserisci codice operativo</p>
+    <input type="password" id="loginPass" placeholder="&#9632;&#9632;&#9632;&#9632;&#9632;&#9632;" autocomplete="off"/>
+    <div class="login-error" id="loginError"></div>
+    <button class="admin-btn" onclick="attemptLogin()">Autorizza</button>
+    <button class="login-cancel" onclick="closeLogin()">Annulla</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-panel">
+    <button class="admin-close" onclick="closeAdmin()">&#10005; CHIUDI</button>
+    <div class="admin-title">Pannello Operativo</div>
+    <div class="admin-subtitle">Gestione immagini — flotta e archivio visivo</div>
+    <div class="admin-section">
+      <div class="admin-section-title">&#9881; Impostazioni Accesso</div>
+      <div class="admin-img-row">
+        <span class="admin-img-label">Nuova Password:</span>
+        <input type="password" id="newPassInput" style="padding:8px 12px;background:var(--black);border:1px solid var(--border-metal);color:var(--white-clean);font-family:'Share Tech Mono',monospace;font-size:12px;width:180px;outline:none" placeholder="nuova password"/>
+        <button class="admin-btn" onclick="changePassword()">Aggiorna</button>
+      </div>
+      <div class="admin-status" id="passStatus"></div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-section-title">&#9632; Immagini Flotta</div>
+      <div id="fleetAdmin"></div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-section-title">&#9632; Archivio Visivo — Galleria</div>
+      <div class="admin-gallery-grid" id="galleryAdmin"></div>
+    </div>
+    <div class="admin-status" id="adminGlobalStatus"></div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('open')">
+  <img id="lightboxImg" src="" alt=""/>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div><div class="hero-noise"></div><div class="hero-grid"></div><div class="hero-vignette"></div>
+  <div class="hero-content">
+    <div class="hero-tag">&#9608; FREQUENZA ATTIVA — SEGNALE INSTABILE</div>
+    <h1 class="hero-title">ZONA<br>ZERO</h1>
+    <p class="hero-claim">Sopravvivi. Trasmetti. Ripeti.</p>
+    <p class="hero-desc">Un universo post-apocalittico costruito a mano. Mezzi recuperati, frequenze clandestine, trasmettitori alimentati con quello che resta. Il segnale non è morto. Qualcuno lo tiene vivo.</p>
+    <div class="hero-buttons">
+      <a href="#fleet" class="btn btn-primary">Esplora la flotta &#9654;</a>
+      <a href="#radio" class="btn btn-ghost">Entra nel centro radio</a>
+    </div>
+    <div class="hero-status">
+      <div class="hero-stat"><div class="hero-stat-val">04</div><div class="hero-stat-label">Unità Attive</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">7.280</div><div class="hero-stat-label">MHz Primaria</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">ATTIVO</div><div class="hero-stat-label">Stato Segnale</div></div>
+    </div>
+  </div>
+</section>
+<div class="hazard-bar"></div>
+
+<!-- SIGNAL -->
+<section class="signal section-pad" id="signal">
+  <div class="container">
+    <div class="signal-grid">
+      <div class="signal-text reveal">
+        <div class="section-label">Trasmissione 001</div>
+        <h2 class="section-title">Il segnale<br>non è morto</h2>
+        <p>Il mondo è cambiato. Le frequenze si sono sporcate di silenzio. Le città sono cadute una dopo l'altra, portandosi via le infrastrutture, i ripetitori, le reti. Quello che restava dell'ordine si è dissolto nel rumore bianco.</p>
+        <p>Ma qualcuno continua. In officine improvvisate, tra rottami e componenti recuperati, c'è chi rimette in funzione trasmettitori, chi monta antenne su mezzi blindati, chi cerca ancora una frequenza pulita per mandare un segnale.</p>
+        <p>Zona Zero non è un luogo. È una condizione operativa. È la scelta di continuare a trasmettere quando tutto dice di spegnere.</p>
+      </div>
+      <div class="signal-panel reveal reveal-delay-2">
+        <div class="signal-panel-line"><span class="dim">TIMESTAMP</span><span class="val" id="tsVal">2087.04.15 — 03:22:41 UTC</span></div>
+        <div class="signal-panel-line"><span class="dim">FREQ PRIMARIA</span><span class="val">7.280 MHz</span></div>
+        <div class="signal-panel-line"><span class="dim">FREQ BACKUP</span><span class="warn">4.625 MHz — degradata</span></div>
+        <div class="signal-panel-line"><span class="dim">STATO RETE</span><span class="val">NODO ATTIVO</span></div>
+        <div class="signal-panel-line"><span class="dim">UNITÀ CAMPO</span><span class="val">04 / 04 operative</span></div>
+        <div class="signal-panel-line"><span class="dim">ENERGIA</span><span class="warn">38% — solare + generatore</span></div>
+        <div class="signal-panel-line"><span class="dim">ALERT</span><span class="alert blinking">&#9632; INTERFERENZA SETTORE NORD</span></div>
+        <div class="signal-panel-line"><span class="dim">ULTIMO MSG</span><span class="val">"Presenza confermata. Invio coordinate."</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="hazard-bar thin"></div>
+
+<!-- RADIO -->
+<section class="radio section-pad" id="radio">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Struttura Operativa</div>
+      <h2 class="section-title">Centro Radio</h2>
+      <p class="section-desc">Il cuore pulsante di Zona Zero. Un banco radio vintage riportato in vita con componenti di recupero, valvole, condensatori trovati, cavi rappezzati. Ogni frequenza che esce da qui è un atto di resistenza.</p>
+    </div>
+    <div class="radio-grid">
+      <div class="radio-card reveal"><div class="radio-card-icon">&#9636;</div><h3>Modulo Trasmissione</h3><p>Unità TX principale su banda HF. Potenza variabile, alimentazione ibrida solare-generatore. Portata stimata: 1200 km in condizioni ottimali.</p><div class="card-tag">TX-MOD-01 — Operativo</div></div>
+      <div class="radio-card reveal reveal-delay-1"><div class="radio-card-icon">&#9678;</div><h3>Scanner Frequenze</h3><p>Monitoraggio continuo dello spettro radio. Identificazione automatica di segnali attivi, interferenze ostili e finestre di trasmissione pulite.</p><div class="card-tag">SCAN-07 — Ciclo Attivo</div></div>
+      <div class="radio-card reveal reveal-delay-2"><div class="radio-card-icon">&#9670;</div><h3>Hub Decodifica</h3><p>Ricezione e decodifica messaggi criptati. Protocollo interno Zona Zero. Ogni comunicazione viene loggata, verificata e archiviata.</p><div class="card-tag">DEC-03 — Standby</div></div>
+    </div>
+    <div class="radio-freq-bar reveal">
+      <div class="radio-freq-item"><span class="dot dot-green"></span> 7.280 MHz — PRIMARIA</div>
+      <div class="radio-freq-item"><span class="dot dot-green"></span> 14.300 MHz — EMERGENZA</div>
+      <div class="radio-freq-item"><span class="dot dot-orange"></span> 4.625 MHz — DEGRADATA</div>
+      <div class="radio-freq-item"><span class="dot dot-red"></span> 3.500 MHz — OFFLINE</div>
+    </div>
+  </div>
+</section>
+<div class="hazard-bar"></div>
+
+<!-- FLEET -->
+<section class="fleet section-pad" id="fleet">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Archivio Operativo</div>
+      <h2 class="section-title">Flotta Zona Zero</h2>
+      <p class="section-desc">Ogni mezzo è stato recuperato, smontato, modificato e rimesso in funzione. Nessuno è uscito dalla catena di montaggio così. Tutti portano i segni del campo.</p>
+    </div>
+    <div class="fleet-grid" id="fleetGrid">
+      <div class="fleet-card reveal" data-unit="unit01">
+        <div class="fleet-card-header"><span class="fleet-card-code">ZZ-UNIT-01</span><span class="fleet-card-status active"><span class="dot dot-green"></span> CAMPO ATTIVO</span></div>
+        <div class="fleet-card-img" id="fleetImg-unit01"><span class="placeholder">UNIT 01</span></div>
+        <div class="fleet-card-body"><h3 class="fleet-card-name">Mystery Machine</h3><div class="fleet-card-role">Unità Esplorazione / Mobile Signal Scout</div><p class="fleet-card-desc">Mezzo recuperato e modificato con parabola direzionale, antenne multifrequenza e moduli radio portatili. Mantiene ancora l'identità originale, ma è stato trasformato in una stazione mobile di ricognizione e segnale. Prima linea, sempre.</p><div class="fleet-tags"><span class="fleet-tag highlight">Parabola</span><span class="fleet-tag">Antenna HF</span><span class="fleet-tag">Modulo Radio</span><span class="fleet-tag">GPS Mod</span><span class="fleet-tag">Weathering Lv.3</span></div></div>
+      </div>
+      <div class="fleet-card reveal reveal-delay-1" data-unit="unit02">
+        <div class="fleet-card-header"><span class="fleet-card-code">ZZ-UNIT-02</span><span class="fleet-card-status active"><span class="dot dot-green"></span> OPERATIVO</span></div>
+        <div class="fleet-card-img" id="fleetImg-unit02"><span class="placeholder">UNIT 02</span></div>
+        <div class="fleet-card-body"><h3 class="fleet-card-name">Signal Transport Unit</h3><div class="fleet-card-role">Camion Tecnico / Trasporto Moduli / Cargo Radio</div><p class="fleet-card-desc">Veicolo tecnico pesante utilizzato per il trasporto di componenti, energia, casse moduli e ricambi per il centro operativo. Colonna vertebrale della logistica Zona Zero. Senza questo mezzo, il segnale si spegne.</p><div class="fleet-tags"><span class="fleet-tag highlight">Cargo</span><span class="fleet-tag">Moduli Energia</span><span class="fleet-tag">Casse TX</span><span class="fleet-tag">Heavy Duty</span><span class="fleet-tag">Weathering Lv.2</span></div></div>
+      </div>
+      <div class="fleet-card reveal reveal-delay-2" data-unit="unit03">
+        <div class="fleet-card-header"><span class="fleet-card-code">ZZ-UNIT-03</span><span class="fleet-card-status standby"><span class="dot dot-orange"></span> STANDBY</span></div>
+        <div class="fleet-card-img" id="fleetImg-unit03"><span class="placeholder">UNIT 03</span></div>
+        <div class="fleet-card-body"><h3 class="fleet-card-name">Mobile Survival Unit</h3><div class="fleet-card-role">Blindato Supporto / Sopravvivenza / Comunicazioni</div><p class="fleet-card-desc">Il mezzo più duro della flotta. Estetica tattica, corazzatura improvvisata, parabola sul tetto e componenti blindati. Progettato per operare dove gli altri non arrivano. Ultimo a entrare, ultimo a uscire.</p><div class="fleet-tags"><span class="fleet-tag highlight">Blindato</span><span class="fleet-tag">Parabola Sat</span><span class="fleet-tag">Tattico</span><span class="fleet-tag">Comm. Criptate</span><span class="fleet-tag">Weathering Lv.4</span></div></div>
+      </div>
+      <div class="fleet-card reveal reveal-delay-3" data-unit="unit04">
+        <div class="fleet-card-header"><span class="fleet-card-code">ZZ-UNIT-04</span><span class="fleet-card-status active"><span class="dot dot-green"></span> CAMPO ATTIVO</span></div>
+        <div class="fleet-card-img" id="fleetImg-unit04"><span class="placeholder">UNIT 04</span></div>
+        <div class="fleet-card-body"><h3 class="fleet-card-name">Field Ration Unit</h3><div class="fleet-card-role">Unità Viveri / Food Support / Ristoro da Campo</div><p class="fleet-card-desc">Mezzo adattato per il supporto alimentare sul campo. Cucina operativa, scorte, distribuzione razionata. In Zona Zero anche mangiare è un'operazione tattica. Niente si spreca, tutto si redistribuisce.</p><div class="fleet-tags"><span class="fleet-tag highlight">Food Ops</span><span class="fleet-tag">Scorte</span><span class="fleet-tag">Distribuzione</span><span class="fleet-tag">Campo Base</span><span class="fleet-tag">Weathering Lv.2</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="hazard-bar thin"></div>
+
+<!-- WORKSHOP -->
+<section class="workshop section-pad" id="workshop">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Processo Operativo</div>
+      <h2 class="section-title">Workshop / Custom Process</h2>
+      <p class="section-desc">Ogni mezzo Zona Zero nasce da un recupero. Il processo è tecnico, manuale, sporco. Da giocattolo dimenticato a reliquia operativa. Nessuno esce pulito da qui.</p>
+    </div>
+    <div class="workshop-steps">
+      <div class="workshop-step reveal"><h3>Recupero</h3><p>Acquisizione di mezzi Playmobil usati, economici, da mercatini o lotti. Selezione per struttura, potenziale e compatibilità con il progetto.</p></div>
+      <div class="workshop-step reveal reveal-delay-1"><h3>Smontaggio</h3><p>Disassemblaggio completo. Rimozione di parti non coerenti. Analisi della struttura portante e dei punti di modifica.</p></div>
+      <div class="workshop-step reveal reveal-delay-2"><h3>Modifica Strutturale</h3><p>Installazione di componenti custom: antenne, parabole, pannelli, cavi, moduli tecnici. Kitbash con pezzi trovati e recuperati.</p></div>
+      <div class="workshop-step reveal reveal-delay-3"><h3>Weathering</h3><p>Lavaggi sporco, dry brush, ruggine finta, graffi, usura simulata. Il mezzo deve sembrare vissuto, operativo, sopravvissuto.</p></div>
+      <div class="workshop-step reveal reveal-delay-4"><h3>Marcatura</h3><p>Applicazione di adesivi tecnici militari, codici unità, hazard stripes, warning decals e identificativi Zona Zero.</p></div>
+      <div class="workshop-step reveal"><h3>Attivazione</h3><p>Il mezzo viene documentato, classificato e inserito nell'archivio operativo. Da quel momento è parte della flotta. Modifica completata.</p></div>
+    </div>
+  </div>
+</section>
+<div class="hazard-bar"></div>
+
+<!-- GALLERY -->
+<section class="gallery section-pad" id="gallery">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Archivio Visivo</div>
+      <h2 class="section-title">Dossier Immagini</h2>
+      <p class="section-desc">Documentazione visiva delle operazioni sul campo. Ogni scatto è un reperto. Ogni immagine è una prova che il segnale continua.</p>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</section>
+<div class="hazard-bar thin"></div>
+
+<!-- DECALS -->
+<section class="decals section-pad" id="decals">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">Identità Visiva</div>
+      <h2 class="section-title">Adesivi &amp; Marcature</h2>
+      <p class="section-desc">Ogni simbolo ha un significato operativo. Codici unità, warning, stemmi, numerazioni. L'identità Zona Zero si porta addosso.</p>
+    </div>
+    <div class="decals-grid">
+      <div class="decal-item reveal"><div class="decal-symbol">&#9888;</div><div class="decal-name">Warning Decal</div></div>
+      <div class="decal-item reveal"><div class="decal-symbol">ZZ</div><div class="decal-name">Stemma Principale</div></div>
+      <div class="decal-item reveal"><div class="decal-symbol">&#9608;&#9608;&#9608;</div><div class="decal-name">Hazard Stripes</div></div>
+      <div class="decal-item reveal"><div class="decal-symbol">U-03</div><div class="decal-name">Codice Unità</div></div>
+      <div class="decal-item reveal"><div class="decal-symbol">&#9211;</div><div class="decal-name">Signal Tag</div></div>
+      <div class="decal-item reveal"><div class="decal-symbol">7.28</div><div class="decal-name">Frequenza ID</div></div>
+      <div class="decal-item reveal"><div class="decal-symbol">&#9762;</div><div class="decal-name">Zona Contaminata</div></div>
+      <div class="decal-item reveal"><div class="decal-symbol">&#10010;</div><div class="decal-name">Medical Unit</div></div>
+    </div>
+  </div>
+</section>
+<div class="hazard-bar"></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">ZONA ZERO</div>
+      <div class="footer-claim">Sopravvivi. Trasmetti. Ripeti.</div>
+      <div class="footer-text">Trasmissione parziale ricevuta.<br>Archivio operativo attivo.<br>Il segnale continua.<br>Frequenza viva.</div>
+      <div class="footer-bottom">&#9632; ZONA ZERO — ARCHIVIO OPERATIVO — TUTTI I SETTORI — SEGNALE ATTIVO &#9632;</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const DEFAULT_PASSWORD='zonazero';
+const FLEET_UNITS=[
+  {id:'unit01',label:'UNIT 01 — Mystery Machine'},
+  {id:'unit02',label:'UNIT 02 — Signal Transport'},
+  {id:'unit03',label:'UNIT 03 — Mobile Survival'},
+  {id:'unit04',label:'UNIT 04 — Field Ration'}
+];
+const GALLERY_SLOTS=[
+  {id:'gal01',caption:'Unit 07 — Field Ready',sub:'Verifica pre-operativa completata'},
+  {id:'gal02',caption:'Signal Rig Mounted',sub:'Installazione modulo antenna completata'},
+  {id:'gal03',caption:'Surface Weathering Test',sub:'Lavaggio sporco + dry brush — fase 2'},
+  {id:'gal04',caption:'Recovery Transport Shell',sub:'Struttura cargo pre-modifica'},
+  {id:'gal05',caption:'Mobile Ration Unit Setup',sub:'Configurazione campo viveri'},
+  {id:'gal06',caption:'Banco Radio — Panoramica',sub:'Centro trasmissioni principale attivo'},
+  {id:'gal07',caption:'Hazard Decals Application',sub:'Fase marcatura — unità 03'},
+  {id:'gal08',caption:'Antenna Array — Dettaglio',sub:'Configurazione multi-banda'},
+  {id:'gal09',caption:'Night Operations',sub:'Trasmissione notturna — settore est'}
+];
+
+function getImg(k){return localStorage.getItem('zz_img_'+k)||null}
+function setImg(k,d){localStorage.setItem('zz_img_'+k,d)}
+function delImg(k){localStorage.removeItem('zz_img_'+k)}
+function getPass(){return localStorage.getItem('zz_admin_pass')||DEFAULT_PASSWORD}
+function setPass(p){localStorage.setItem('zz_admin_pass',p)}
+
+function renderFleetImages(){
+  FLEET_UNITS.forEach(u=>{
+    const c=document.getElementById('fleetImg-'+u.id);
+    if(!c)return;
+    const img=getImg(u.id);
+    if(img)c.innerHTML='<img src="'+img+'" alt="'+u.label+'"/>';
+    else c.innerHTML='<span class="placeholder">'+u.id.replace('unit','UNIT ')+'</span>';
+  });
+}
+
+function renderGallery(){
+  const g=document.getElementById('galleryGrid');
+  g.innerHTML='';
+  const delays=['','reveal-delay-1','reveal-delay-2'];
+  GALLERY_SLOTS.forEach((s,i)=>{
+    const img=getImg(s.id);
+    const d=document.createElement('div');
+    d.className='gallery-item reveal '+delays[i%3];
+    if(img){
+      d.innerHTML='<img src="'+img+'" alt="'+s.caption+'" onclick="openLightbox(this.src)"/><div class="gallery-overlay"><div class="caption">'+s.caption+'</div><div class="sub">'+s.sub+'</div></div>';
+    }else{
+      d.innerHTML='<div class="gallery-placeholder"><span>ZZ-IMG-'+String(i+1).padStart(2,'0')+'</span></div><div class="gallery-overlay"><div class="caption">'+s.caption+'</div><div class="sub">'+s.sub+'</div></div>';
+    }
+    g.appendChild(d);
+  });
+  g.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+}
+
+function openLightbox(src){document.getElementById('lightboxImg').src=src;document.getElementById('lightbox').classList.add('open')}
+
+function openLogin(){
+  document.getElementById('loginOverlay').classList.add('open');
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginError').textContent='';
+  setTimeout(()=>document.getElementById('loginPass').focus(),100);
+}
+function closeLogin(){document.getElementById('loginOverlay').classList.remove('open')}
+function attemptLogin(){
+  if(document.getElementById('loginPass').value===getPass()){closeLogin();openAdmin()}
+  else{document.getElementById('loginError').innerHTML='&#9632; ACCESSO NEGATO';document.getElementById('loginPass').value=''}
+}
+document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')attemptLogin()});
+
+function openAdmin(){renderAdminFleet();renderAdminGallery();document.getElementById('adminOverlay').classList.add('open');document.body.style.overflow='hidden'}
+function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');document.body.style.overflow='';renderFleetImages();renderGallery()}
+
+function changePassword(){
+  const v=document.getElementById('newPassInput').value.trim();
+  if(v.length<4){document.getElementById('passStatus').textContent='Minimo 4 caratteri.';return}
+  setPass(v);document.getElementById('newPassInput').value='';
+  document.getElementById('passStatus').innerHTML='&#9632; Password aggiornata.';
+  setTimeout(()=>document.getElementById('passStatus').textContent='',3000);
+}
+
+function renderAdminFleet(){
+  const c=document.getElementById('fleetAdmin');c.innerHTML='';
+  FLEET_UNITS.forEach(u=>{
+    const img=getImg(u.id);
+    const r=document.createElement('div');r.className='admin-img-row';
+    r.innerHTML='<span class="admin-img-label">'+u.label+'</span><div class="admin-img-preview">'+(img?'<img src="'+img+'"/>':'<span class="no-img">NO IMG</span>')+'</div><input type="file" accept="image/*" class="admin-file-input" id="file-'+u.id+'" onchange="handleFleetUpload(\''+u.id+'\',this)"/><button class="admin-btn" onclick="document.getElementById(\'file-'+u.id+'\').click()">Carica</button>'+(img?'<button class="admin-btn delete" onclick="deleteFleetImg(\''+u.id+'\')">Rimuovi</button>':'');
+    c.appendChild(r);
+  });
+}
+
+function handleFleetUpload(id,inp){
+  const f=inp.files[0];if(!f)return;
+  resizeAndStore(f,id,()=>{renderAdminFleet();showStatus('Immagine caricata — '+id.toUpperCase())});
+}
+function deleteFleetImg(id){delImg(id);renderAdminFleet();showStatus('Immagine rimossa — '+id.toUpperCase())}
+
+function renderAdminGallery(){
+  const c=document.getElementById('galleryAdmin');c.innerHTML='';
+  GALLERY_SLOTS.forEach((s,i)=>{
+    const img=getImg(s.id);
+    const d=document.createElement('div');d.className='admin-gallery-slot';
+    d.innerHTML='<div class="slot-label">SLOT '+String(i+1).padStart(2,'0')+'</div><div class="admin-img-preview">'+(img?'<img src="'+img+'"/>':'<span class="no-img">NO IMG</span>')+'</div><input type="file" accept="image/*" class="admin-file-input" id="file-'+s.id+'" onchange="handleGalUpload(\''+s.id+'\',this)"/><div class="slot-btns"><button class="admin-btn" onclick="document.getElementById(\'file-'+s.id+'\').click()">Carica</button>'+(img?'<button class="admin-btn delete" onclick="deleteGalImg(\''+s.id+'\')">&#10005;</button>':'')+'</div>';
+    c.appendChild(d);
+  });
+}
+
+function handleGalUpload(id,inp){
+  const f=inp.files[0];if(!f)return;
+  resizeAndStore(f,id,()=>{renderAdminGallery();showStatus('Galleria aggiornata — '+id.toUpperCase())});
+}
+function deleteGalImg(id){delImg(id);renderAdminGallery();showStatus('Galleria rimossa — '+id.toUpperCase())}
+
+function resizeAndStore(file,key,cb){
+  const r=new FileReader();
+  r.onload=function(e){
+    const img=new Image();
+    img.onload=function(){
+      const M=800;let w=img.width,h=img.height;
+      if(w>M||h>M){if(w>h){h=Math.round(h*M/w);w=M}else{w=Math.round(w*M/h);h=M}}
+      const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);
+      try{setImg(key,cv.toDataURL('image/jpeg',0.75));if(cb)cb()}
+      catch(err){showStatus('ERRORE: localStorage pieno!')}
+    };img.src=e.target.result;
+  };r.readAsDataURL(file);
+}
+
+function showStatus(m){
+  const el=document.getElementById('adminGlobalStatus');
+  el.innerHTML='&#9632; '+m;setTimeout(()=>el.textContent='',4000);
+}
+
+document.getElementById('adminTrigger').addEventListener('click',e=>{e.preventDefault();openLogin()});
+document.getElementById('burger').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
+
+const revealObserver=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+
+let lastScroll=0;const navEl=document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  const c=window.pageYOffset;
+  navEl.style.transform=c>lastScroll&&c>80?'translateY(-100%)':'translateY(0)';
+  lastScroll=c;
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    if(a.id==='adminTrigger')return;
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){t.scrollIntoView({behavior:'smooth',block:'start'});document.getElementById('navLinks').classList.remove('open')}
+  });
+});
+
+setInterval(()=>{
+  const d=new Date(),el=document.getElementById('tsVal');
+  if(el)el.textContent='2087.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0')+' — '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' UTC';
+},1000);
+
+renderFleetImages();
+renderGallery();
+</script>
+</body>
+</html>
