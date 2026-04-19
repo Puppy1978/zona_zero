@@ -264,7 +264,7 @@ initRv();initLinks();startCk();}
 
 const RO=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
 function initRv(){document.querySelectorAll('.rv').forEach(el=>RO.observe(el))}
-let ckId;function startCk(){clearInterval(ckId);ckId=setInterval(()=>{const d=new Date(),el=document.getElementById('ts');if(el)el.textContent='2087.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0')+' \u2014 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' UTC'},1000)}
+let ckId;function startCk(){clearInterval(ckId);ckId=setInterval(()=>{const d=new Date(),el=document.getElementById('ts');if(el)el.textContent='2026.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0')+' \u2014 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' UTC'},1000)}
 function initLinks(){document.querySelectorAll('#site a[href^="#"]').forEach(a=>{a.onclick=function(e){e.preventDefault();const t=document.querySelector(this.getAttribute('href'));if(t){t.scrollIntoView({behavior:'smooth'});document.getElementById('nlinks').classList.remove('open')}}})}
 function openLB(s){document.getElementById('lbi').src=s;document.getElementById('lb').classList.add('on')}
 
